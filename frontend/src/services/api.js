@@ -52,9 +52,15 @@ export async function apiRequest(endpoint, options = {}) {
     headers['Authorization'] = `Token ${token}`;
   }
 
+  // Support custom timeout (default 25 seconds)
+  const timeoutMs = options.timeout || 25000;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
   const config = {
     ...options,
     headers,
+    signal: options.signal || controller.signal,
   };
 
   if (config.body && typeof config.body === 'object') {
@@ -63,11 +69,13 @@ export async function apiRequest(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config);
+    clearTimeout(timeoutId);
 
     // Handle 204 No Content
     if (response.status === 204) {
       return { success: true };
     }
+
 
     const data = await response.json().catch(() => ({}));
 
@@ -99,10 +107,14 @@ export async function apiRequest(endpoint, options = {}) {
 
     return data;
   } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Connection timed out. The server may be waking up from sleep. Please try again.');
+    }
     if (err.name === 'TypeError' && err.message.includes('fetch')) {
       throw new Error('Unable to reach the backend server. If using Render free tier, the service is waking up from sleep (takes ~45s) — please try again in a moment.');
     }
     throw err;
   }
+
 
 }

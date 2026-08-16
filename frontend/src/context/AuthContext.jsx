@@ -11,29 +11,45 @@ export function AuthProvider({ children }) {
 
   // Initialize session by verifying existing token
   useEffect(() => {
+    let isMounted = true;
+
     async function initAuth() {
       const savedToken = getAuthToken();
       if (!savedToken) {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
         return;
       }
 
       try {
-        const userData = await getCurrentUser();
-        setUser(userData);
-        setTokenState(savedToken);
+        // Use a short 6-second timeout for session restore
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth check timeout')), 6000)
+        );
+        const userData = await Promise.race([getCurrentUser(), timeoutPromise]);
+        if (isMounted) {
+          setUser(userData);
+          setTokenState(savedToken);
+        }
       } catch (err) {
-        console.warn('Session expired or invalid token:', err);
+        console.warn('Session verification failed or timed out:', err.message);
         setAuthToken(null);
-        setTokenState(null);
-        setUser(null);
+        if (isMounted) {
+          setTokenState(null);
+          setUser(null);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
 
     initAuth();
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
 
   const login = useCallback(async (username, password) => {
     const data = await loginUser(username, password);
