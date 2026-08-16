@@ -132,18 +132,19 @@ REST_FRAMEWORK = {
 
 # CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF Trusted Origins for deployed environments
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.vercel.app',
     'http://localhost:3000',
-    'http://127.0.0.1:3000',
     'http://localhost:3001',
+    'http://localhost:5173',
+    'http://127.0.0.1:3000',
     'http://127.0.0.1:3001',
-    'https://daily-gratitide-journal.vercel.app',
-    
+    'http://127.0.0.1:5173',
 ]
 
-
-CORS_ALLOW_CREDENTIALS = True
 
 

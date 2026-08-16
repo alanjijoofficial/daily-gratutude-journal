@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    health_check,
     api_root,
     RegisterView,
     LoginView,
@@ -10,8 +11,10 @@ from .views import (
 )
 
 urlpatterns = [
-    # API Directory root
+    # Health check & API Directory root
+    path('health/', health_check, name='api-health'),
     path('', api_root, name='api-root'),
+
 
     # Authentication endpoints
 

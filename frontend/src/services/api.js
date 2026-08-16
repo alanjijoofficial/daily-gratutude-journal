@@ -3,9 +3,18 @@
  * Automatically injects authentication tokens and extracts structured errors.
  */
 
-const API_BASE_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) 
-  ? process.env.REACT_APP_API_URL 
+let rawApiUrl = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) 
+  ? process.env.REACT_APP_API_URL.trim() 
   : 'http://127.0.0.1:8000/api';
+
+// Normalize URL: Ensure it ends with /api (without trailing slash)
+rawApiUrl = rawApiUrl.replace(/\/+$/, '');
+if (!rawApiUrl.endsWith('/api')) {
+  rawApiUrl = `${rawApiUrl}/api`;
+}
+
+const API_BASE_URL = rawApiUrl;
+
 
 
 /**
@@ -91,8 +100,9 @@ export async function apiRequest(endpoint, options = {}) {
     return data;
   } catch (err) {
     if (err.name === 'TypeError' && err.message.includes('fetch')) {
-      throw new Error('Unable to connect to the backend server. Please verify Django is running.');
+      throw new Error('Unable to reach the backend server. If using Render free tier, the service is waking up from sleep (takes ~45s) — please try again in a moment.');
     }
     throw err;
   }
+
 }
