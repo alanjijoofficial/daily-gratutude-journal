@@ -12,19 +12,28 @@ const API_BASE_URL = (typeof process !== 'undefined' && process.env && process.e
  * Retrieves the stored auth token.
  */
 export function getAuthToken() {
-  return localStorage.getItem('gratitude_token');
+  try {
+    return localStorage.getItem('gratitude_token');
+  } catch (e) {
+    return null;
+  }
 }
 
 /**
  * Saves the auth token.
  */
 export function setAuthToken(token) {
-  if (token) {
-    localStorage.setItem('gratitude_token', token);
-  } else {
-    localStorage.removeItem('gratitude_token');
+  try {
+    if (token) {
+      localStorage.setItem('gratitude_token', token);
+    } else {
+      localStorage.removeItem('gratitude_token');
+    }
+  } catch (e) {
+    // Ignore storage errors in restricted contexts
   }
 }
+
 
 /**
  * Core fetch wrapper with error handling and auth headers.
