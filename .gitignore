@@ -13,9 +13,6 @@ ENV/
 db.sqlite3
 local_settings.py
 *.log
-staticfiles/
-backend/staticfiles/
-
 
 # Node / React
 node_modules/

@@ -3,18 +3,9 @@
  * Automatically injects authentication tokens and extracts structured errors.
  */
 
-let rawApiUrl = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) 
-  ? process.env.REACT_APP_API_URL.trim() 
+const API_BASE_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) 
+  ? process.env.REACT_APP_API_URL 
   : 'http://127.0.0.1:8000/api';
-
-// Normalize URL: Ensure it ends with /api (without trailing slash)
-rawApiUrl = rawApiUrl.replace(/\/+$/, '');
-if (!rawApiUrl.endsWith('/api')) {
-  rawApiUrl = `${rawApiUrl}/api`;
-}
-
-const API_BASE_URL = rawApiUrl;
-
 
 
 /**
@@ -52,15 +43,9 @@ export async function apiRequest(endpoint, options = {}) {
     headers['Authorization'] = `Token ${token}`;
   }
 
-  // Support custom timeout (default 25 seconds)
-  const timeoutMs = options.timeout || 25000;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
   const config = {
     ...options,
     headers,
-    signal: options.signal || controller.signal,
   };
 
   if (config.body && typeof config.body === 'object') {
@@ -69,13 +54,11 @@ export async function apiRequest(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config);
-    clearTimeout(timeoutId);
 
     // Handle 204 No Content
     if (response.status === 204) {
       return { success: true };
     }
-
 
     const data = await response.json().catch(() => ({}));
 
@@ -107,14 +90,9 @@ export async function apiRequest(endpoint, options = {}) {
 
     return data;
   } catch (err) {
-    if (err.name === 'AbortError') {
-      throw new Error('Connection timed out. The server may be waking up from sleep. Please try again.');
-    }
     if (err.name === 'TypeError' && err.message.includes('fetch')) {
-      throw new Error('Unable to reach the backend server. If using Render free tier, the service is waking up from sleep (takes ~45s) — please try again in a moment.');
+      throw new Error('Unable to connect to the backend server. Please verify Django is running.');
     }
     throw err;
   }
-
-
 }

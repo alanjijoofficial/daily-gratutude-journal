@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { AlertCircle, ArrowRight } from '../components/Icons';
+import { AlertCircle, ArrowRight, Sparkles } from '../components/Icons';
+
 
 import { useAuth } from '../context/AuthContext';
 
@@ -27,6 +28,12 @@ export default function LoginPage({ onNavigateToRegister }) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const fillDemoAccount = () => {
+    setUsername('alan');
+    setPassword('password123');
+    setErrorMessage('');
   };
 
   return (
@@ -92,8 +99,18 @@ export default function LoginPage({ onNavigateToRegister }) {
             <span>{isSubmitting ? 'Logging in...' : 'Login'}</span>
             <ArrowRight size={16} />
           </button>
-        </form>
 
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ width: '100%', marginTop: '0.65rem', fontSize: '0.85rem' }}
+            onClick={fillDemoAccount}
+            disabled={isSubmitting}
+          >
+            <Sparkles size={14} color="var(--primary)" />
+            <span>Try Demo Account (alan)</span>
+          </button>
+        </form>
 
         <div className="auth-footer">
           Don't have an account?{' '}

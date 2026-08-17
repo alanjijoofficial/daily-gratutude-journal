@@ -35,8 +35,6 @@ export function AuthProvider({ children }) {
     initAuth();
   }, []);
 
-
-
   const login = useCallback(async (username, password) => {
     const data = await loginUser(username, password);
     setUser(data.user);

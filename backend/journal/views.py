@@ -16,13 +16,6 @@ from .serializers import (
 
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
-def health_check(request):
-    """Health check endpoint for Render and uptime monitors."""
-    return Response({"status": "ok", "service": "Daily Gratitude Journal API"})
-
-
-@api_view(['GET'])
-@permission_classes([permissions.AllowAny])
 def api_root(request, format=None):
     """
     GET /api/
@@ -31,7 +24,6 @@ def api_root(request, format=None):
     return Response({
         "message": "🌱 Welcome to the Daily Gratitude Journal REST API",
         "endpoints": {
-            "health": reverse('api-health', request=request, format=format),
             "entries": reverse('entry-list-create', request=request, format=format),
             "login": reverse('api-login', request=request, format=format),
             "register": reverse('api-register', request=request, format=format),
@@ -41,7 +33,6 @@ def api_root(request, format=None):
         },
         "instructions": "For protected endpoints (e.g. /api/entries/), send HTTP Header: Authorization: Token <your_token>"
     })
-
 
 
 

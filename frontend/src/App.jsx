@@ -33,8 +33,6 @@ function AppContent() {
     );
   }
 
-
-
   if (!isAuthenticated) {
     return authView === 'login' ? (
       <LoginPage onNavigateToRegister={() => setAuthView('register')} />
