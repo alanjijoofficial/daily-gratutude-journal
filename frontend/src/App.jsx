@@ -9,19 +9,10 @@ import { Sprout } from './components/Icons';
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const [authView, setAuthView] = useState('login'); // 'login' or 'register'
-  const [showSkip, setShowSkip] = useState(false);
 
-  // Show skip button if loading takes more than 3 seconds
-  React.useEffect(() => {
-    if (isLoading) {
-      const timer = setTimeout(() => setShowSkip(true), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
-
-  if (isLoading && !showSkip) {
+  if (isLoading) {
     return (
-      <div className="auth-wrapper" style={{ flexDirection: 'column', gap: '1rem', textAlign: 'center' }}>
+      <div className="auth-wrapper" style={{ flexDirection: 'column', gap: '1rem' }}>
         <div style={{
           width: '50px',
           height: '50px',
@@ -41,6 +32,7 @@ function AppContent() {
       </div>
     );
   }
+
 
 
   if (!isAuthenticated) {
