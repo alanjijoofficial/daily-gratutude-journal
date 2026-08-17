@@ -5,7 +5,7 @@
 
 const API_BASE_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) 
   ? process.env.REACT_APP_API_URL 
-  : 'https://daily-gratutude-journal-git-main-alan-jijo.vercel.app/api';
+  : 'https://daily-gratutude-journal.onrender.com/api';
 
 
 /**
