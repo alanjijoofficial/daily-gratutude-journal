@@ -5,7 +5,7 @@
 
 const API_BASE_URL = (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) 
   ? process.env.REACT_APP_API_URL 
-  : 'http://127.0.0.1:8000/api';
+  : 'https://daily-gratutude-journal-git-main-alan-jijo.vercel.app/api';
 
 
 /**
