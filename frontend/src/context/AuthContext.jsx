@@ -7,33 +7,48 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setTokenState] = useState(() => getAuthToken());
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => Boolean(getAuthToken()));
 
   // Initialize session by verifying existing token
   useEffect(() => {
+    let active = true;
+
     async function initAuth() {
       const savedToken = getAuthToken();
       if (!savedToken) {
-        setIsLoading(false);
+        if (active) setIsLoading(false);
         return;
       }
 
       try {
-        const userData = await getCurrentUser();
-        setUser(userData);
-        setTokenState(savedToken);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth check timeout')), 2500)
+        );
+        const userData = await Promise.race([getCurrentUser(), timeoutPromise]);
+        if (active) {
+          setUser(userData);
+          setTokenState(savedToken);
+        }
       } catch (err) {
-        console.warn('Session expired or invalid token:', err);
+        console.warn('Session verification skipped:', err);
         setAuthToken(null);
-        setTokenState(null);
-        setUser(null);
+        if (active) {
+          setTokenState(null);
+          setUser(null);
+        }
       } finally {
-        setIsLoading(false);
+        if (active) {
+          setIsLoading(false);
+        }
       }
     }
 
     initAuth();
+    return () => {
+      active = false;
+    };
   }, []);
+
 
   const login = useCallback(async (username, password) => {
     const data = await loginUser(username, password);
